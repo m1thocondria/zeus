@@ -1,0 +1,20 @@
+
+setup:
+  MOVZ  X9,   1       ; x9 : fibo_n
+  MOVZ X10,   1       ; x10: fibo_n+1
+  MOVZ X11,   0       ; x11: Temporal
+  MOVZ  X1,  10       ; x1 : Numero de recursiones
+  MOVZ  X2,   0       ; x2 : indice
+  MOVZ  X3,   0       ; x3 : Direccion de un array en memoria
+  ; some commentary
+main:
+  CBZ   X1, exit      ; Si X1 == 0, ya acabamos
+  ADD  X11, X10, X9   ; temp = fibo_n+1 + fibo_n
+  ADDI  X9, X10, #0   ; fibo_n   = fibo_n+1
+  ADDI X10, X11, #0   ; fibo_n+1 = temp (fibo_n+2)
+  ADD   X4,  X2, X3   ;   |
+  STUR X10,[ X4, #0]  ;   |  M[X3 + X2] = X10
+  ADDI  X2,  X2, #1   ; X2 += 1
+  SUBI  X1,  X1, #1   ; X1 -= 1
+  B     main
+exit:
