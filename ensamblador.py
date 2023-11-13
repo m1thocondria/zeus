@@ -1,4 +1,7 @@
+#!/usr/bin/python3
 from enum import Enum
+from pathlib import Path
+import argparse
 
 suffix = "\t | "
 instruction_map = {
@@ -29,15 +32,23 @@ class lType(Enum):
     TAG = 2
     INSTRUCTION = 3
 
-def print_list(data:list):
+def print_list(data:list, name="data"):
     endstr = ", \n"
-    startstr = " ["
+    startstr = f"[DEBUG] {name} = ["
     for i,el in enumerate(data):
         if i == len(data)-1:
             endstr = "]\n"
-        print( startstr, el, end=endstr)
+        print(startstr, el, end=endstr)
         if i == 0:
-            startstr = "  "
+            startstr = "            " + " "*len(name)
+
+def dump_code(data:list, file:str|None = None):
+    if file is None:
+        print_list(data)
+        return
+    with open(file, "w") as f:
+        for line in data:
+            print(line, file=f)
 
 def parse_line(line:str) -> (lType, tuple[str]):
     """
@@ -178,7 +189,7 @@ def parse_args(tipo:str, args:list[str], noLine:int, tags:dict[str, int]) -> lis
     return result
 
 
-def main(file):
+def main(file, dump = None):
     tags = dict()
     instructions = []
     for_later = []
@@ -194,7 +205,6 @@ def main(file):
                 for_later.append((i,res[1]))
                 lines.append(line)
 
-    print(f"{tags = }")
     # Ahora que ya sabemos todas las tags podemos trabajar
     for i,inst in enumerate(for_later):
         noLine = inst[0]
@@ -219,8 +229,28 @@ def main(file):
         args_list.insert(0, opcode)
         code = "".join(args_list)
         instructions.append( code )
-    print_list([len(ins) for ins in instructions])
 
+    if dump is None:
+        dump = f"{file.stem}.out"
+    dump_code(instructions, dump)
+    print(f"[INFO] '{file}' was assemble successfully!")
+    # print_list([len(ins) for ins in instructions])
 
 if __name__ == "__main__":
-    main("fibo.legv8")
+    parser = argparse.ArgumentParser(description='Assemble assembly code.')
+    parser.add_argument('filename', type=str, nargs="+",
+                        help='ARM(legv8) assembly code to assemble.')
+    parser.add_argument("-o",'--out', type=str, nargs="*", help='Output file to dump native code. (default="filename".out)')
+    args = parser.parse_args()
+
+    if args.out is not None:
+        if len(args.out) != len(args.filename):
+            print(f"[ERROR] The outfile parameters(size={len(args.out)}) doesn't have the same size as the infile parameters(size={len(args.filename)}).")
+            exit(1)
+        outs = args.out
+    else:
+        outs = [None]*len(args.filename)
+    # print(args.out, args.filename, sep="\n")
+    # exit(69)
+    for i,file in enumerate(args.filename):
+        main(Path(file), outs[i])
