@@ -159,11 +159,11 @@ def parse_args(tipo:str, args:list[str], noLine:int, tags:dict[str, int]) -> lis
             # address
             addr = args[2].replace("]","").replace("#","").strip()
             result.append( tobits(int(addr), 9) )
+            # op
+            result.append( tobits(0, 2) )
             # Rn
             reg = args[1].replace("[","").strip()
             result.append( reg_to_bits(reg) )
-            # op
-            result.append( tobits(0, 2) )
             # Rt
             result.append( reg_to_bits(args[0].strip()) )
         case "R":
@@ -238,7 +238,7 @@ def main(file, dump = None):
 
     if dump is None:
         dump = f"{file.stem}.out"
-    dump_code(instructions, dump, False)
+    dump_code(instructions, dump, binary=False)
     print(f"[INFO] '{file}' was assemble successfully!")
     # print_list([len(ins) for ins in instructions])
 
