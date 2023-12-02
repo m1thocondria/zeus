@@ -42,13 +42,19 @@ def print_list(data:list, name="data"):
         if i == 0:
             startstr = "            " + " "*len(name)
 
-def dump_code(data:list, file:str|None = None):
+def dump_code(data:list, file:str|None = None, binary=True):
     if file is None:
         print_list(data)
         return
-    with open(file, "w") as f:
-        for line in data:
-            print(line, file=f)
+    if binary:
+        with open(file, "w") as f:
+            for line in data:
+                print(line, file=f)
+    else:
+        with open(file, "w") as f:
+            print([int(a,2) for a in data], file=f)
+            # for line in data:
+            #     print(int(line, 2), file=f)
 
 def parse_line(line:str) -> (lType, tuple[str]):
     """
@@ -226,13 +232,13 @@ def main(file, dump = None):
             print(f"{suffix}{noLine} > '{lines[i][:-1]}'")
             break
 
-        args_list.insert(0, opcode)
+        args_list.insert(0, opcode )
         code = "".join(args_list)
         instructions.append( code )
 
     if dump is None:
         dump = f"{file.stem}.out"
-    dump_code(instructions, dump)
+    dump_code(instructions, dump, False)
     print(f"[INFO] '{file}' was assemble successfully!")
     # print_list([len(ins) for ins in instructions])
 
