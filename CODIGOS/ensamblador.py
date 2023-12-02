@@ -1,31 +1,10 @@
 #!/usr/bin/python3
 from enum import Enum
 from pathlib import Path
+from ISA import instruction_map
 import argparse
 
 suffix = "\t | "
-instruction_map = {
-        "B"   :("B", "000101"),
-        "B.LT":("CB","01010100"),
-        "CBZ" :("CB","10110100"),
-        "LDUR":("D", "11111000010"),
-        "STUR":("D", "11111000000"),
-        "ADD" :("R", "10001000000"),
-        "AND" :("R", "10001000001"),
-        "ORR" :("R", "10001000010"),
-        "XOR" :("R", "10001000011"),
-        "SUB" :("R", "10001000100"),
-        "LSR" :("R", "10001000101"),
-        "LSL" :("R", "10001000110"),
-        "ADDI":("I", "1001000000"),
-        "ANDI":("I", "1001000000"),
-        "ORRI":("I", "1001000000"),
-        "XORI":("I", "1001000000"),
-        "SUBI":("I", "1001000000"),
-        "MOVZ":("IW","10100000000"),
-        "MOVK":("IW","10100000001"),
-        }
-
 class lType(Enum):
     VACIO = 0
     COMENTARIO = 1
