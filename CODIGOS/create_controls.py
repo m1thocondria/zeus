@@ -8,11 +8,12 @@ directory = "CIRCUITOS_SEPARADOS"
 
 
 # from page 397 from the book
-control_codes = "Reg2Loc ALUOp1 ALUOp0 ALUSrc Branch MemRead MemWrite RegWrite MemtoReg".split(" ")
-R_fmt =    [0,1,0,0,0,0,0,1,0]
-LDUR_fmt = [0,0,0,1,0,1,0,1,1]
-STUR_fmt = [1,0,0,1,0,0,1,0,0]
-CBZ_fmt =  [1,0,1,0,1,0,0,0,0]
+control_codes = "Reg2Loc ALUOp1 ALUOp0 ALUSrc Branch MemRead MemWrite RegWrite MemtoReg SExt1 SExt0".split(" ")
+R_fmt =    [0,1,0,0,0,0,0,1,0,0,0]
+I_fmt =    [0,1,0,1,0,0,0,1,0,1,1]
+LDUR_fmt = [0,0,0,1,0,1,0,1,1,0,0]
+STUR_fmt = [1,0,0,1,0,0,1,0,0,0,0]
+CBZ_fmt =  [1,0,1,0,1,0,0,0,0,1,0]
 # B_fmt =    []
 # MOVZ  =    []
 
@@ -73,6 +74,11 @@ def main_control():
                     if R_fmt[j] == 0: continue
                     print(f"\t\t\t{code} = true;", file=f)
                 continue
+            if current_key == "I":
+                for j, code in enumerate(control_codes):
+                    if I_fmt[j] == 0: continue
+                    print(f"\t\t\t{code} = true;", file=f)
+                continue
 
             if keys_data[i] in dict_fmt:
                 for j, code in enumerate(control_codes):
@@ -87,5 +93,5 @@ def main_control():
 
 
 if __name__ == "__main__":
-    alu_control()
+    main_control()
 
