@@ -164,8 +164,12 @@ def parse_args(tipo:str, args:list[str], noLine:int, tags:dict[str, int]) -> lis
             # Rd
             result.append( reg_to_bits( args[0].strip()) )
         case "IW":
-            check_argument_len(len(args), 2, "IW")
-            # mov inmmediate
+            check_argument_len(len(args), 3, "IW")
+            # MOVZ x2, #immediate, 3
+            #                      ^ region
+            # region
+            result.append( tobits( int(args[2].strip()), 2) )
+            # immediate
             result.append( to2comp( int(args[1].replace("#","").strip()), 16) )
             # Rd
             result.append( reg_to_bits( args[0].strip()) )
@@ -174,7 +178,7 @@ def parse_args(tipo:str, args:list[str], noLine:int, tags:dict[str, int]) -> lis
     return result
 
 
-def main(file, dump = None):
+def main(file, dump = None, binary=False):
     tags = dict()
     instructions = []
     for_later = []
@@ -217,7 +221,7 @@ def main(file, dump = None):
 
     if dump is None:
         dump = f"{file.stem}.out"
-    dump_code(instructions, dump, binary=False)
+    dump_code(instructions, dump, binary)
     print(f"[INFO] '{file}' was assemble successfully!")
     # print_list([len(ins) for ins in instructions])
 
@@ -226,6 +230,7 @@ if __name__ == "__main__":
     parser.add_argument('filename', type=str, nargs="+",
                         help='ARM(legv8) assembly code to assemble.')
     parser.add_argument("-o",'--out', type=str, nargs="*", help='Output file to dump native code. (default="filename".out)')
+    parser.add_argument("-b",'--binary', action="store_true", default=False)
     args = parser.parse_args()
 
     if args.out is not None:
@@ -238,4 +243,4 @@ if __name__ == "__main__":
     # print(args.out, args.filename, sep="\n")
     # exit(69)
     for i,file in enumerate(args.filename):
-        main(Path(file), outs[i])
+        main(Path(file), outs[i], args.binary)

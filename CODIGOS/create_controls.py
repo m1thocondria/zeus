@@ -8,19 +8,22 @@ directory = "CIRCUITOS_SEPARADOS"
 
 
 # from page 397 from the book
-control_codes = "Reg2Loc ALUOp1 ALUOp0 ALUSrc Branch MemRead MemWrite RegWrite MemtoReg SExt1 SExt0".split(" ")
-R_fmt =    [0,1,0,0,0,0,0,1,0,0,0]
-I_fmt =    [0,1,0,1,0,0,0,1,0,1,1]
-LDUR_fmt = [0,0,0,1,0,1,0,1,1,0,0]
-STUR_fmt = [1,0,0,1,0,0,1,0,0,0,0]
-CBZ_fmt =  [1,0,1,0,1,0,0,0,0,1,0]
+control_codes = "Reg2Loc ALUOp1 ALUOp0 ALUSrc Branch MemRead MemWrite RegWrite MemtoReg SExt1 SExt0 UBranch".split(" ")
+R_fmt =    [0,1,0,0,0,0,0,1,0,0,0,0]
+I_fmt =    [0,1,0,1,0,0,0,1,0,1,1,0]
+IW_fmt =   [0,0,0,0,0,0,0,0,0,0,0,0]
+LDUR_fmt = [0,0,0,1,0,1,0,1,1,0,0,0]
+STUR_fmt = [1,0,0,1,0,0,1,0,0,0,0,0]
+CBZ_fmt =  [1,0,1,0,1,0,0,0,0,1,0,0]
+B_fmt =    [1,0,1,0,1,0,0,0,0,1,0,1]
 # B_fmt =    []
 # MOVZ  =    []
 
 dict_fmt = {
     "LDUR": LDUR_fmt,
     "STUR": STUR_fmt,
-    "CBZ" : CBZ_fmt
+    "CBZ" : CBZ_fmt,
+    "B" : B_fmt
 }
 
 def print_header(f, name:str, ccodes=control_codes, args="opcode"):
