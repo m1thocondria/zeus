@@ -34,11 +34,11 @@ function [Reg2Loc, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg,
 	temp = xl_slice(opcode, 31, 23);
 	switch temp
 		case 320 % MOVZ
-			Reg2Loc = 2;
 			RegWrite = 1;
+			MemtoReg = 2;
 		case 321 % MOVK
-			Reg2Loc = 2;
 			RegWrite = 1;
+			MemtoReg = 2;
 	end
 
 	% Formato I
