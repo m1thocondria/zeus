@@ -88,7 +88,7 @@ def to2comp(num:int, size:int):
 def tobits(num:int, size:int) -> str:
     b = bin(num)[2:]
     diff = size - len(b)
-    if diff > 0:
+    if diff >= 0:
         res = "0"*diff + b
     if diff < 0:
         raise ValueError(f"'{num}' can't be represented in a unsigned {size} bit number.")
@@ -121,10 +121,10 @@ def parse_args(tipo:str, args:list[str], noLine:int, tags:dict[str, int]) -> lis
             tag = args[0].strip()
             if not tag in tags:
                 raise ValueError(f"There is no tag '{tag}' in source.")
-            offset = tags[tag] - noLine
+            offset = tags[tag] - (noLine + 1)
             result.append( to2comp(offset, 26) )
         case "CB":
-            check_argument_len(len(args), 2, "B")
+            check_argument_len(len(args), 2, "CB")
             # offset
             tag = args[1].strip()
             if not tag in tags:
@@ -194,17 +194,29 @@ def main(file, dump = None, binary=False):
                 for_later.append((i,res[1]))
                 lines.append(line)
 
-    # Ahora que ya sabemos todas las tags podemos trabajar
+    # Data hazards
+    NOP = ["ADD", "X31", "X31", "X31"]
     for i,inst in enumerate(for_later):
         noLine = inst[0]
         cmd = inst[1][0]
         args = inst[1][1:]
-
         if not cmd in instruction_map:
             raise ValueError(f"[ERROR] {file}:{noLine}. {cmd} no es una instruccion soportada.")
         if len(args) == 0:
             raise ValueError(f"[ERROR] {file}:{noLine}. {cmd} no tiene suficientes argumentos.")
 
+        if cmd == "B":
+            for_later.insert(i+1, (noLine+1, NOP))
+            for_later.insert(i+1, (noLine+2, NOP))
+
+    # Add a NOP at the end
+    for_later.append((len(for_later), NOP))
+
+    # Ahora que ya sabemos todas las tags podemos trabajar
+    for i,inst in enumerate(for_later):
+        noLine = inst[0]
+        cmd = inst[1][0]
+        args = inst[1][1:]
         inst_type, opcode = instruction_map[cmd]
 
         try:
@@ -216,8 +228,12 @@ def main(file, dump = None, binary=False):
             break
 
         args_list.insert(0, opcode )
-        code = "".join(args_list)
+        if binary:
+            code = " ".join(args_list)
+        else:
+            code = "".join(args_list)
         instructions.append( code )
+
 
     if dump is None:
         dump = f"{file.stem}.out"
