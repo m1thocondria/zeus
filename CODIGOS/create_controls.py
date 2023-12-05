@@ -8,14 +8,14 @@ directory = "CIRCUITOS_SEPARADOS"
 
 
 # from page 397 from the book
-control_codes = "Reg2Loc ALUOp1 ALUOp0 ALUSrc Branch MemRead MemWrite RegWrite MemtoReg SExt1 SExt0 UBranch".split(" ")
-R_fmt =    [0,1,0,0,0,0,0,1,0,0,0,0]
-I_fmt =    [0,1,0,1,0,0,0,1,0,1,1,0]
-IW_fmt =   [0,0,0,0,0,0,0,0,0,0,0,0]
-LDUR_fmt = [0,0,0,1,0,1,0,1,1,0,0,0]
-STUR_fmt = [1,0,0,1,0,0,1,0,0,0,0,0]
-CBZ_fmt =  [1,0,1,0,1,0,0,0,0,1,0,0]
-B_fmt =    [1,0,1,0,1,0,0,0,0,1,0,1]
+control_codes = "Reg2Loc ALUOp ALUSrc Branch MemRead MemWrite RegWrite MemtoReg SExt UBranch".split(" ")
+R_fmt =    [0,2,0,0,0,0,1,0,0,0]
+I_fmt =    [0,2,1,0,0,0,1,0,3,0]
+IW_fmt =   [2,0,0,0,0,0,1,0,0,0]
+LDUR_fmt = [0,0,1,0,1,0,1,1,0,0]
+STUR_fmt = [1,0,1,0,0,1,0,0,0,0]
+CBZ_fmt =  [1,1,0,1,0,0,0,0,2,0]
+B_fmt =    [1,1,0,1,0,0,0,0,1,1]
 # B_fmt =    []
 # MOVZ  =    []
 
@@ -36,7 +36,7 @@ def print_header(f, name:str, ccodes=control_codes, args="opcode"):
 
 def print_base(f, ccodes=control_codes):
     for ctrl in ccodes:
-        print(f"\t{ctrl} = false;",file=f)
+        print(f"\t{ctrl} = 0;",file=f)
 
 def alu_control():
     out_file = f"{directory}/alu_control.m"
@@ -75,18 +75,23 @@ def main_control():
             if current_key == "R":
                 for j, code in enumerate(control_codes):
                     if R_fmt[j] == 0: continue
-                    print(f"\t\t\t{code} = true;", file=f)
+                    print(f"\t\t\t{code} = {R_fmt[j]};", file=f)
                 continue
             if current_key == "I":
                 for j, code in enumerate(control_codes):
                     if I_fmt[j] == 0: continue
-                    print(f"\t\t\t{code} = true;", file=f)
+                    print(f"\t\t\t{code} = {I_fmt[j]};", file=f)
+                continue
+            if current_key == "IW":
+                for j, code in enumerate(control_codes):
+                    if IW_fmt[j] == 0: continue
+                    print(f"\t\t\t{code} = {IW_fmt[j]};", file=f)
                 continue
 
             if keys_data[i] in dict_fmt:
                 for j, code in enumerate(control_codes):
                     if dict_fmt[keys_data[i]][j] == 0: continue
-                    print(f"\t\t\t{code} = true;", file=f)
+                    print(f"\t\t\t{code} = {dict_fmt[keys_data[i]][j]};", file=f)
                 continue
 
         print("\tend", file=f)

@@ -1,111 +1,113 @@
-function [Reg2Loc, ALUOp1, ALUOp0, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg, SExt1, SExt0] = control_block(opcode)
-	Reg2Loc = false;
-	ALUOp1 = false;
-	ALUOp0 = false;
-	ALUSrc = false;
-	Branch = false;
-	MemRead = false;
-	MemWrite = false;
-	RegWrite = false;
-	MemtoReg = false;
-	SExt1 = false;
-	SExt0 = false;
+function [Reg2Loc, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg, SExt, UBranch] = control_block(opcode)
+	Reg2Loc = 0;
+	ALUOp = 0;
+	ALUSrc = 0;
+	Branch = 0;
+	MemRead = 0;
+	MemWrite = 0;
+	RegWrite = 0;
+	MemtoReg = 0;
+	SExt = 0;
+	UBranch = 0;
 	% Formato B
 	temp = xl_slice(opcode, 31, 26);
 	switch temp
 		case 5 % B
+			Reg2Loc = 1;
+			ALUOp = 1;
+			Branch = 1;
+			SExt = 1;
+			UBranch = 1;
 	end
 
 	% Formato CB
 	temp = xl_slice(opcode, 31, 24);
 	switch temp
-		case 84 % B.LT
 		case 180 % CBZ
-			Reg2Loc = true;
-			ALUOp0 = true;
-			Branch = true;
-			SExt1 = true;
+			Reg2Loc = 1;
+			ALUOp = 1;
+			Branch = 1;
+			SExt = 2;
+	end
+
+	% Formato IW
+	temp = xl_slice(opcode, 31, 23);
+	switch temp
+		case 320 % MOVZ
+			Reg2Loc = 2;
+			RegWrite = 1;
+		case 321 % MOVK
+			Reg2Loc = 2;
+			RegWrite = 1;
 	end
 
 	% Formato I
 	temp = xl_slice(opcode, 31, 22);
 	switch temp
 		case 576 % ADDI
-			ALUOp1 = true;
-			ALUSrc = true;
-			RegWrite = true;
-			SExt1 = true;
-			SExt0 = true;
+			ALUOp = 2;
+			ALUSrc = 1;
+			RegWrite = 1;
+			SExt = 3;
 		case 577 % ANDI
-			ALUOp1 = true;
-			ALUSrc = true;
-			RegWrite = true;
-			SExt1 = true;
-			SExt0 = true;
+			ALUOp = 2;
+			ALUSrc = 1;
+			RegWrite = 1;
+			SExt = 3;
 		case 578 % ORRI
-			ALUOp1 = true;
-			ALUSrc = true;
-			RegWrite = true;
-			SExt1 = true;
-			SExt0 = true;
+			ALUOp = 2;
+			ALUSrc = 1;
+			RegWrite = 1;
+			SExt = 3;
 		case 579 % XORI
-			ALUOp1 = true;
-			ALUSrc = true;
-			RegWrite = true;
-			SExt1 = true;
-			SExt0 = true;
+			ALUOp = 2;
+			ALUSrc = 1;
+			RegWrite = 1;
+			SExt = 3;
 		case 580 % SUBI
-			ALUOp1 = true;
-			ALUSrc = true;
-			RegWrite = true;
-			SExt1 = true;
-			SExt0 = true;
+			ALUOp = 2;
+			ALUSrc = 1;
+			RegWrite = 1;
+			SExt = 3;
 	end
 
 	% Formato D
 	temp = xl_slice(opcode, 31, 21);
 	switch temp
 		case 1986 % LDUR
-			ALUSrc = true;
-			MemRead = true;
-			RegWrite = true;
-			MemtoReg = true;
+			ALUSrc = 1;
+			MemRead = 1;
+			RegWrite = 1;
+			MemtoReg = 1;
 		case 1984 % STUR
-			Reg2Loc = true;
-			ALUSrc = true;
-			MemWrite = true;
+			Reg2Loc = 1;
+			ALUSrc = 1;
+			MemWrite = 1;
 	end
 
 	% Formato R
 	temp = xl_slice(opcode, 31, 21);
 	switch temp
 		case 1088 % ADD
-			ALUOp1 = true;
-			RegWrite = true;
+			ALUOp = 2;
+			RegWrite = 1;
 		case 1089 % AND
-			ALUOp1 = true;
-			RegWrite = true;
+			ALUOp = 2;
+			RegWrite = 1;
 		case 1090 % ORR
-			ALUOp1 = true;
-			RegWrite = true;
+			ALUOp = 2;
+			RegWrite = 1;
 		case 1091 % XOR
-			ALUOp1 = true;
-			RegWrite = true;
+			ALUOp = 2;
+			RegWrite = 1;
 		case 1092 % SUB
-			ALUOp1 = true;
-			RegWrite = true;
+			ALUOp = 2;
+			RegWrite = 1;
 		case 1093 % LSR
-			ALUOp1 = true;
-			RegWrite = true;
+			ALUOp = 2;
+			RegWrite = 1;
 		case 1094 % LSL
-			ALUOp1 = true;
-			RegWrite = true;
-	end
-
-	% Formato IW
-	temp = xl_slice(opcode, 31, 21);
-	switch temp
-		case 1280 % MOVZ
-		case 1281 % MOVK
+			ALUOp = 2;
+			RegWrite = 1;
 	end
 end
