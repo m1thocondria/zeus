@@ -2,7 +2,7 @@
 setup:
   MOVZ  X9,   1, 0       ; x9 : fibo_n
   MOVZ X10,   1, 0       ; x10: fibo_n+1
-  MOVZ X11,   0, 0       ; x11: Temporal
+  XOR  X11, X11, X11     ; x11: Temporal
   MOVZ  X1,  10, 0       ; x1 : Numero de recursiones
   MOVZ  X2,   0, 0       ; x2 : indice
   MOVZ  X3,   0, 0       ; x3 : Direccion de un array en memoria

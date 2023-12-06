@@ -1,4 +1,4 @@
-function [Reg2Loc, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg, SExt, UBranch] = control_block(opcode)
+function [Reg2Loc, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg, SExt, UBranch, EsEstoUnMOV] = control_block(opcode)
 	Reg2Loc = 0;
 	ALUOp = 0;
 	ALUSrc = 0;
@@ -9,6 +9,7 @@ function [Reg2Loc, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg,
 	MemtoReg = 0;
 	SExt = 0;
 	UBranch = 0;
+	EsEstoUnMOV = 0;
 	% Formato B
 	temp = xl_slice(opcode, 31, 26);
 	switch temp
@@ -35,10 +36,10 @@ function [Reg2Loc, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg,
 	switch temp
 		case 320 % MOVZ
 			RegWrite = 1;
-			MemtoReg = 2;
+			EsEstoUnMOV = 1;
 		case 321 % MOVK
 			RegWrite = 1;
-			MemtoReg = 2;
+			EsEstoUnMOV = 1;
 	end
 
 	% Formato I
@@ -65,6 +66,11 @@ function [Reg2Loc, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg,
 			RegWrite = 1;
 			SExt = 3;
 		case 580 % SUBI
+			ALUOp = 2;
+			ALUSrc = 1;
+			RegWrite = 1;
+			SExt = 3;
+		case 581 % NORI
 			ALUOp = 2;
 			ALUSrc = 1;
 			RegWrite = 1;
@@ -100,13 +106,16 @@ function [Reg2Loc, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg,
 		case 1091 % XOR
 			ALUOp = 2;
 			RegWrite = 1;
-		case 1092 % SUB
+		case 1092 % NOR
 			ALUOp = 2;
 			RegWrite = 1;
-		case 1093 % LSR
+		case 1093 % SUB
 			ALUOp = 2;
 			RegWrite = 1;
-		case 1094 % LSL
+		case 1125 % LSR
+			ALUOp = 2;
+			RegWrite = 1;
+		case 1126 % LSL
 			ALUOp = 2;
 			RegWrite = 1;
 	end

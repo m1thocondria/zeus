@@ -26,19 +26,19 @@ dict_fmt = {
     "B" : B_fmt
 }
 
-alu_codes = "Ainv Binv Op1 Op0".split(" ")
+alu_codes = "Op1 Op0 Ainv Binv".split(" ")
 dict_ALOps = {
-    "LDUR": [0,0,1,0],
-    "STUR": [0,0,1,0],
-    "CBZ" : [0,1,1,1],
+    "LDUR": [1,0,0,0],
+    "STUR": [1,0,0,0],
+    "CBZ" : [1,1,0,1],
 }
 dict_ALOps_R = {
     "AND" : [0,0,0,0],
-    "ORR" : [0,0,0,1],
-    "ADD" : [0,0,1,0],
-    "SUB" : [0,1,1,0],
-    "XOR" : [0,0,1,1],
-    "NOR" : [1,1,0,0]
+    "ORR" : [0,1,0,0],
+    "ADD" : [1,0,0,0],
+    "SUB" : [1,0,0,1],
+    "XOR" : [1,1,0,0],
+    "NOR" : [0,0,1,1]
 }
 
 def print_header(f, name:str, ccodes=control_codes, args="opcode"):
@@ -76,28 +76,30 @@ def alu_control():
         print("\topcode_I = xl_slice(opcode, 31, 22);", file=f)
 
         # poner los codes apropiados
-        print("\tswitch (ALUOp)", file=f)
-        print("\t\tcase 0: % LDUR y STUR", file=f)
+        print("\tswitch ALUOp", file=f)
+        print("\t\tcase 0 % LDUR y STUR", file=f)
         print_iftrue(f, alu_codes, dict_ALOps["LDUR"], prefix="\t\t\t")
-        print("\t\tcase 1: % CBZ", file=f)
+        print("\t\tcase 1 % CBZ", file=f)
         print_iftrue(f, alu_codes, dict_ALOps["CBZ"], prefix="\t\t\t")
-        print("\t\tcase 2: % Formato R e I", file=f)
+        print("\t\tcase 2 % Formato R e I", file=f)
         # checar por toda la ISA
-        print("\t\t\tswitch (opcode_R)", file=f)
+        print("\t\t\tswitch opcode_R", file=f)
         for name in instruction_map.keys():
             for alu_name in dict_ALOps_R.keys(): # checar por si se parece algun op
                 if is_not_inside(name, alu_name): continue
                 if instruction_map[name][0] == "I": continue
-                print(f"\t\t\t\tcase {int(instruction_map[name][1],2)}: % {name}", file=f)
+                print(f"\t\t\t\tcase {int(instruction_map[name][1],2)} % {name}", file=f)
                 print_iftrue(f, alu_codes, dict_ALOps_R[alu_name], prefix="\t\t\t\t\t")
-        print("\t\t\tswitch (opcode_I)", file=f)
+        print("\t\t\tend", file=f)
+        print("\t\t\tswitch opcode_I", file=f)
         for name in instruction_map.keys():
             for alu_name in dict_ALOps_R.keys(): # checar por si se parece algun op
                 if is_not_inside(name, alu_name): continue
                 if instruction_map[name][0] == "R": continue
-                print(f"\t\t\t\tcase {int(instruction_map[name][1],2)}: % {name}", file=f)
+                print(f"\t\t\t\tcase {int(instruction_map[name][1],2)} % {name}", file=f)
                 print_iftrue(f, alu_codes, dict_ALOps_R[alu_name], prefix="\t\t\t\t\t")
-
+        print("\t\t\tend", file=f)
+        print("\tend", file=f)
         print("end", file=f)
         print(f"[INFO] We wrote the alu controls to '{out_file}' succesfully!")
 
@@ -154,5 +156,5 @@ def main_control():
 
 
 if __name__ == "__main__":
-    alu_control()
+    main_control()
 

@@ -1,0 +1,13 @@
+; Codigo que hace x10 += 5, x9 veces
+MOVZ X9, 5, 0    ; x9 = counter
+ADD X31, X31, X31
+ADD X31, X31, X31
+main:
+    CBZ x9, exit
+    ADD X31, X31, X31
+    ADD X31, X31, X31
+    ADDI X10, X10, #5
+    SUBI X9, X9, #1
+    B main
+exit:
+
