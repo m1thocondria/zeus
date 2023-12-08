@@ -121,7 +121,7 @@ def parse_args(tipo:str, args:list[str], noLine:int, tags:dict[str, int]) -> lis
             tag = args[0].strip()
             if not tag in tags:
                 raise ValueError(f"There is no tag '{tag}' in source.")
-            offset = tags[tag] - (noLine + 1)
+            offset = tags[tag] - (noLine + 1) - 2
             result.append( to2comp(offset, 26) )
         case "CB":
             check_argument_len(len(args), 2, "CB")
@@ -179,10 +179,14 @@ def parse_args(tipo:str, args:list[str], noLine:int, tags:dict[str, int]) -> lis
 
 
 def main(file, dump = None, binary=False):
+    NOP = ["ADD", "X31", "X31", "X31"]
     tags = dict()
     instructions = []
     for_later = []
     lines = []
+
+    # add a NOP at the start
+    for_later.append((len(for_later), NOP))
     with open(file, "r") as f:
         for i,line in enumerate(f):
             res = parse_line(line)
@@ -195,7 +199,6 @@ def main(file, dump = None, binary=False):
                 lines.append(line)
 
     # Data hazards
-    NOP = ["ADD", "X31", "X31", "X31"]
     for i,inst in enumerate(for_later):
         noLine = inst[0]
         cmd = inst[1][0]
