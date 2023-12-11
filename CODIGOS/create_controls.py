@@ -30,7 +30,7 @@ alu_codes = "Op1 Op0 Ainv Binv".split(" ")
 dict_ALOps = {
     "LDUR": [1,0,0,0],
     "STUR": [1,0,0,0],
-    "CBZ" : [1,1,0,1],
+    "CBZ" : [0,0,0,0],
 }
 dict_ALOps_R = {
     "AND" : [0,0,0,0],
@@ -156,5 +156,5 @@ def main_control():
 
 
 if __name__ == "__main__":
-    main_control()
+    alu_control()
 

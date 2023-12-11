@@ -9,9 +9,6 @@ function [Op1, Op0, Ainv, Binv] = alu_control(ALUOp, opcode)
 		case 0 % LDUR y STUR
 			Op1 = 1;
 		case 1 % CBZ
-			Op1 = 1;
-			Op0 = 1;
-			Binv = 1;
 		case 2 % Formato R e I
 			switch opcode_R
 				case 1088 % ADD

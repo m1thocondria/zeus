@@ -121,7 +121,7 @@ def parse_args(tipo:str, args:list[str], noLine:int, tags:dict[str, int]) -> lis
             tag = args[0].strip()
             if not tag in tags:
                 raise ValueError(f"There is no tag '{tag}' in source.")
-            offset = tags[tag] - (noLine + 1) - 2
+            offset = tags[tag] - noLine - 2 # el menos 2 es por el pipeline
             result.append( to2comp(offset, 26) )
         case "CB":
             check_argument_len(len(args), 2, "CB")
@@ -129,7 +129,7 @@ def parse_args(tipo:str, args:list[str], noLine:int, tags:dict[str, int]) -> lis
             tag = args[1].strip()
             if not tag in tags:
                 raise ValueError(f"There is no tag '{tag}' in source.")
-            offset = tags[tag] - noLine
+            offset = tags[tag] - noLine - 3 # el menos 2 es por el pipeline
             result.append( to2comp(offset, 19) )
             # register
             result.append( reg_to_bits(args[0].strip()) )
@@ -207,10 +207,12 @@ def main(file, dump = None, binary=False):
             raise ValueError(f"[ERROR] {file}:{noLine}. {cmd} no es una instruccion soportada.")
         if len(args) == 0:
             raise ValueError(f"[ERROR] {file}:{noLine}. {cmd} no tiene suficientes argumentos.")
-
         if cmd == "B":
             for_later.insert(i+1, (noLine+1, NOP))
             for_later.insert(i+1, (noLine+2, NOP))
+            for tag, line_number in tags.items():
+                if line_number > noLine:
+                    tags[tag] += 2
 
     # Add a NOP at the end
     for_later.append((len(for_later), NOP))
